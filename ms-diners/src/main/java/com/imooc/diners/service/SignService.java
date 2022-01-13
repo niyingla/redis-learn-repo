@@ -62,9 +62,9 @@ public class SignService {
         // bitfield user:sign:5:202011 u30 0
         //定义子命令时要声明 操作数的长度
         BitFieldSubCommands bitFieldSubCommands = BitFieldSubCommands.create()
-                //创建新的无符号BitFieldSubCommands.BitFieldType 参数 位
+                //创建新的无符号BitFieldSubCommands.BitFieldType bitmap fieldKey
                 .get(BitFieldSubCommands.BitFieldType.unsigned(dayOfMonth))
-                //设置基于零的位偏移
+                //当前一条命令 位偏移量 0
                 .valueAt(0);
         List<Long> list = redisTemplate.opsForValue().bitField(signKey, bitFieldSubCommands);
         if (list == null || list.isEmpty()) {
@@ -78,6 +78,7 @@ public class SignService {
                 未签到：yyyy-MM-01 false
              */
             LocalDateTime localDateTime = LocalDateTimeUtil.of(date).withDayOfMonth(i);
+            // v 为 1 true 0 false
             boolean flag = v >> 1 << 1 != v;
             signInfo.put(DateUtil.format(localDateTime, "yyyy-MM-dd"), flag);
             v >>= 1;
