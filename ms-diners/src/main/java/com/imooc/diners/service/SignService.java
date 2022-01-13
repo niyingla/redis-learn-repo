@@ -18,6 +18,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -59,8 +60,11 @@ public class SignService {
         int dayOfMonth = DateUtil.lengthOfMonth(DateUtil.month(date) + 1,
                 DateUtil.isLeapYear(DateUtil.year(date)));
         // bitfield user:sign:5:202011 u30 0
+        //定义子命令时要声明 操作数的长度
         BitFieldSubCommands bitFieldSubCommands = BitFieldSubCommands.create()
+                //创建新的无符号BitFieldSubCommands.BitFieldType 参数 位
                 .get(BitFieldSubCommands.BitFieldType.unsigned(dayOfMonth))
+                //设置基于零的位偏移
                 .valueAt(0);
         List<Long> list = redisTemplate.opsForValue().bitField(signKey, bitFieldSubCommands);
         if (list == null || list.isEmpty()) {
